@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prophet Name Quiz — Nooraya Kids</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:#f3f4f6;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 16px 48px;
+  }
+
+  .game-wrapper{
+    background:#ffffff;
+    border-radius:20px;
+    box-shadow:0 2px 16px rgba(0,0,0,0.08);
+    width:100%;
+    max-width:500px;
+    padding:28px 24px;
+    min-height:560px;
+  }
+
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+  .game-label{font-size:13px;font-weight:600;color:#6b7280;letter-spacing:.4px;text-transform:uppercase;}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;}
+  .chip{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid;}
+  .c-score{background:#EAF3DE;color:#27500A;border-color:#97C459;}
+  .c-step{background:#E6F1FB;color:#0C447C;border-color:#85B7EB;}
+  .c-pts{background:#FAEEDA;color:#633806;border-color:#EF9F27;}
+
+  .q-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:16px;padding:22px 18px;margin-bottom:16px;}
+
+  .cat-pill{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-bottom:14px;background:#FAEEDA;color:#633806;border:1px solid #EF9F27;}
+
+  .clue-label{font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;}
+
+  .clues-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+
+  .clue-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;}
+  .clue-num{width:22px;height:22px;border-radius:50%;background:#EEEDFE;color:#3C3489;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .clue-text{font-size:14px;color:#374151;line-height:1.45;}
+
+  .clue-locked{background:#f9fafb !important;border-color:#e5e7eb !important;}
+  .clue-locked .clue-num{background:#f3f4f6;color:#9ca3af;}
+  .clue-locked .clue-text{color:#9ca3af;font-style:italic;}
+
+  .prog-track{height:4px;background:#e5e7eb;border-radius:4px;margin-top:4px;overflow:hidden;}
+  .prog-fill{height:100%;background:#BA7517;border-radius:4px;transition:width .4s ease;}
+
+  .hint-btn{
+    width:100%;
+    padding:11px;
+    border-radius:10px;
+    border:1.5px solid #e5e7eb;
+    background:#fff;
+    font-size:13px;
+    font-weight:600;
+    color:#374151;
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .15s,border-color .15s;
+    margin-bottom:12px;
+  }
+  .hint-btn:hover:not(:disabled){background:#f9fafb;border-color:#9ca3af;}
+  .hint-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .hint-btn:focus-visible{outline:3px solid #378ADD;outline-offset:2px;}
+
+  .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+
+  .opt-btn{
+    border:1.5px solid #e5e7eb;
+    border-radius:12px;
+    padding:14px 10px;
+    background:#fff;
+    cursor:pointer;
+    font-family:inherit;
+    text-align:center;
+    transition:border-color .15s,background .15s;
+    line-height:1.3;
+  }
+  .opt-btn:hover{background:#f9fafb;border-color:#9ca3af;}
+  .opt-btn:focus-visible{outline:3px solid #378ADD;outline-offset:2px;}
+  .opt-en{font-size:14px;font-weight:600;color:#111827;}
+  .opt-ar{font-size:13px;color:#6b7280;font-weight:400;direction:rtl;margin-top:2px;}
+
+  .opt-correct{background:#EAF3DE !important;border-color:#3B6D11 !important;}
+  .opt-correct .opt-en{color:#27500A;}
+  .opt-wrong{background:#FCEBEB !important;border-color:#A32D2D !important;}
+  .opt-wrong .opt-en{color:#791F1F;}
+
+  .fb-panel{border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+  .fb-ok{background:#EAF3DE;border:1.5px solid #97C459;}
+  .fb-no{background:#FCEBEB;border:1.5px solid #F09595;}
+  .fb-icon{font-size:22px;flex-shrink:0;}
+  .fb-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+  .fb-ok .fb-title{color:#27500A;}
+  .fb-no .fb-title{color:#791F1F;}
+  .fb-text{font-size:13px;color:#4b5563;line-height:1.5;}
+
+  .next-btn{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    background:#BA7517;
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .15s;
+  }
+  .next-btn:hover{background:#854F0B;}
+  .next-btn:focus-visible{outline:3px solid #378ADD;outline-offset:2px;}
+
+  .results{text-align:center;padding:6px 0;}
+  .res-big{font-size:54px;display:block;margin-bottom:12px;}
+  .res-title{font-size:22px;font-weight:600;color:#111827;margin-bottom:8px;}
+  .stars{display:flex;justify-content:center;gap:5px;font-size:28px;margin-bottom:12px;}
+  .res-score{font-size:42px;font-weight:700;color:#111827;margin-bottom:4px;}
+  .res-sub{font-size:13px;color:#6b7280;margin-bottom:20px;line-height:1.5;}
+
+  .divider{height:1px;background:#e5e7eb;margin:14px 0;}
+
+  .rev-list{text-align:left;margin-bottom:18px;}
+  .rev-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;margin-bottom:6px;border:1px solid #e5e7eb;background:#fff;}
+  .rev-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .dot-ok{background:#3B6D11;}
+  .dot-no{background:#E24B4A;}
+  .rev-icon{font-size:20px;flex-shrink:0;}
+  .rev-text{flex:1;}
+  .rev-name{font-size:13px;font-weight:600;color:#111827;}
+  .rev-detail{font-size:11px;color:#6b7280;margin-top:1px;}
+
+  .again-btn{
+    width:100%;
+    padding:13px;
+    border-radius:12px;
+    border:1.5px solid #BA7517;
+    background:transparent;
+    color:#854F0B;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .15s;
+    margin-bottom:10px;
+  }
+  .again-btn:hover{background:#FAEEDA;}
+  .again-btn:focus-visible{outline:3px solid #378ADD;outline-offset:2px;}
+
+  .branding{text-align:center;margin-top:20px;font-size:12px;color:#9ca3af;}
+  .branding a{color:#BA7517;text-decoration:none;font-weight:600;}
+  .branding a:hover{text-decoration:underline;}
+
+  @media(max-width:480px){
+    body{padding:0;}
+    .game-wrapper{border-radius:0;box-shadow:none;min-height:100vh;}
+    .opts-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="game-wrapper">
+  <h2 class="sr-only">Prophet Name Quiz — read the clues and guess which Prophet of Islam is being described.</h2>
+  <div id="ga"></div>
+  <div class="branding">Made with ❤️ by <a href="https://www.youtube.com/@NoorayaStories" target="_blank">Nooraya Stories</a></div>
+</div>
+
+<script>
+const PROPHETS=[
+  {
+    name:'Adam (عليه السلام)',en:'Adam',ar:'آدم',
+    clues:[
+      'I am the first human being ever created.',
+      'Allah created me from clay with His own hands.',
+      'I lived in Jannah before coming to Earth.',
+      'Allah taught me the names of all things.',
+    ],
+    fact:'Prophet Adam ﷺ is the first Prophet and the father of all humankind.',
+    category:'First Prophets'
+  },
+  {
+    name:'Nuh (عليه السلام)',en:'Nuh',ar:'نوح',
+    clues:[
+      'I preached to my people for 950 years.',
+      'My people refused to listen and worship Allah.',
+      'Allah commanded me to build a very large boat.',
+      'I saved animals and believers from a great flood.',
+    ],
+    fact:'Prophet Nuh ﷺ built the Ark to save believers and animals from the great flood.',
+    category:'Early Prophets'
+  },
+  {
+    name:'Ibrahim (عليه السلام)',en:'Ibrahim',ar:'إبراهيم',
+    clues:[
+      'I broke the idols my people used to worship.',
+      'My people threw me into a great fire, but I was not harmed.',
+      'Allah called me His close friend — Khalilullah.',
+      'I built the Kaabah in Makkah with my son.',
+    ],
+    fact:'Prophet Ibrahim ﷺ is known as Khalilullah — the close friend of Allah.',
+    category:'Ulul Azm'
+  },
+  {
+    name:'Musa (عليه السلام)',en:'Musa',ar:'موسى',
+    clues:[
+      'As a baby, I was placed in a basket in a river.',
+      'Allah spoke to me directly on a mountain.',
+      'I was given the miracle of the staff that turned into a snake.',
+      'I led the Children of Israel out of Egypt from Pharaoh.',
+    ],
+    fact:'Prophet Musa ﷺ received the Tawrah and spoke directly with Allah.',
+    category:'Ulul Azm'
+  },
+  {
+    name:'Isa (عليه السلام)',en:'Isa',ar:'عيسى',
+    clues:[
+      'I was born without a father — a miracle from Allah.',
+      'I could speak as a newborn baby in the cradle.',
+      'Allah gave me the miracle of healing the sick.',
+      'I was given the Injeel (Gospel) by Allah.',
+    ],
+    fact:'Prophet Isa ﷺ was born of a virgin and given the miracle of healing.',
+    category:'Ulul Azm'
+  },
+  {
+    name:'Muhammad (ﷺ)',en:'Muhammad',ar:'محمد',
+    clues:[
+      'I am the final and last Prophet sent by Allah.',
+      'I was born in Makkah and received the Quran.',
+      'The angel Jibreel brought me the first revelation in a cave.',
+      'Allah calls me a mercy to all the worlds.',
+    ],
+    fact:'Prophet Muhammad ﷺ is the final Prophet and received the Holy Quran.',
+    category:'Seal of Prophets'
+  },
+  {
+    name:'Yusuf (عليه السلام)',en:'Yusuf',ar:'يوسف',
+    clues:[
+      'My brothers were jealous of me and threw me in a well.',
+      'Allah gave me the gift of interpreting dreams.',
+      'I was taken to Egypt and later put in prison unfairly.',
+      'I became the treasury minister of Egypt.',
+    ],
+    fact:'The story of Prophet Yusuf ﷺ is called the best of stories in the Quran.',
+    category:'Stories of Quran'
+  },
+  {
+    name:'Dawud (عليه السلام)',en:'Dawud',ar:'داوود',
+    clues:[
+      'As a young man, I defeated the giant warrior Jalut.',
+      'Allah gave me a beautiful voice for reciting Zabur.',
+      'I was also a king and a Prophet at the same time.',
+      'Iron became soft in my hands by Allah\'s miracle.',
+    ],
+    fact:'Prophet Dawud ﷺ received the Zabur and could soften iron with his hands.',
+    category:'Prophet Kings'
+  },
+  {
+    name:'Sulaiman (عليه السلام)',en:'Sulaiman',ar:'سليمان',
+    clues:[
+      'I could understand the language of animals and birds.',
+      'Allah gave me control over the wind and jinn.',
+      'I built a magnificent temple as a house of worship.',
+      'The Queen of Sheba — Bilqis — visited my great kingdom.',
+    ],
+    fact:'Prophet Sulaiman ﷺ was given the miracle of commanding jinn and animals.',
+    category:'Prophet Kings'
+  },
+  {
+    name:'Yunus (عليه السلام)',en:'Yunus',ar:'يونس',
+    clues:[
+      'I left my people before receiving Allah\'s permission.',
+      'I was swallowed by a giant whale in the ocean.',
+      'Inside the darkness, I made dua and asked for forgiveness.',
+      'Allah accepted my dua and rescued me from the whale.',
+    ],
+    fact:'Prophet Yunus ﷺ made dua from inside the whale: "There is no god but You, glory be to You."',
+    category:'Stories of Quran'
+  },
+  {
+    name:'Ayyub (عليه السلام)',en:'Ayyub',ar:'أيوب',
+    clues:[
+      'I was tested by Allah with a very long, painful illness.',
+      'I remained patient and grateful through years of hardship.',
+      'I never complained or lost faith in Allah.',
+      'Allah rewarded my patience and restored my health.',
+    ],
+    fact:'Prophet Ayyub ﷺ is the symbol of patience — he was sick for 18 years and never lost faith.',
+    category:'Patient Prophets'
+  },
+  {
+    name:'Idris (عليه السلام)',en:'Idris',ar:'إدريس',
+    clues:[
+      'I am mentioned in the Quran as truthful and a Prophet.',
+      'Allah raised me to a very high place.',
+      'I was one of the earliest Prophets sent to mankind.',
+      'I am known for wisdom and was among the righteous.',
+    ],
+    fact:'Prophet Idris ﷺ was raised to a lofty station by Allah, as mentioned in the Quran.',
+    category:'Early Prophets'
+  },
+];
+
+const ALL_NAMES=['Adam','Nuh','Ibrahim','Musa','Isa','Muhammad','Yusuf','Dawud','Sulaiman','Yunus','Ayyub','Idris'];
+const MAX_CLUE_PTS=[30,20,10,5];
+
+let qs=[],cur=0,score=0,clueIdx=0,answered=false,history=[];
+
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+
+function getOpts(correct){
+  const others=shuffle(ALL_NAMES.filter(n=>n!==correct.en)).slice(0,3);
+  return shuffle([
+    {en:correct.en,ar:correct.ar},
+    ...others.map(n=>{const p=PROPHETS.find(x=>x.en===n);return{en:p.en,ar:p.ar};})
+  ]);
+}
+
+function start(){
+  qs=shuffle(PROPHETS).slice(0,8).map(p=>({p,opts:getOpts(p)}));
+  cur=0;score=0;clueIdx=0;answered=false;history=[];
+  render();
+}
+
+function render(){
+  if(cur>=qs.length){renderResults();return;}
+  const {p,opts}=qs[cur];
+  const prog=Math.round((cur/qs.length)*100);
+  const pts=MAX_CLUE_PTS[clueIdx]||5;
+  const visClues=p.clues.slice(0,clueIdx+1);
+  const lockedClues=p.clues.slice(clueIdx+1);
+  const canReveal=clueIdx<p.clues.length-1&&!answered;
+
+  const cluesHtml=
+    visClues.map((c,i)=>`
+      <li class="clue-item">
+        <span class="clue-num">${i+1}</span>
+        <span class="clue-text">${c}</span>
+      </li>`).join('')+
+    lockedClues.map((_,i)=>`
+      <li class="clue-item clue-locked">
+        <span class="clue-num">${visClues.length+i+1}</span>
+        <span class="clue-text">Reveal next clue to unlock...</span>
+      </li>`).join('');
+
+  const optsHtml=opts.map(o=>`
+    <button class="opt-btn" onclick="checkAnswer('${o.en.replace(/'/g,"\\'")}',this)" aria-label="${o.en}">
+      <div class="opt-en">${o.en}</div>
+      <div class="opt-ar">${o.ar}</div>
+    </button>`).join('');
+
+  document.getElementById('ga').innerHTML=`
+    <div class="top-bar">
+      <span class="game-label">Prophet quiz</span>
+      <div class="chips">
+        <span class="chip c-score">⭐ ${score}</span>
+        <span class="chip c-pts">+${pts} pts if correct</span>
+        <span class="chip c-step">${cur+1}/${qs.length}</span>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="cat-pill">${p.category}</div>
+      <div class="clue-label">Clues — who is this Prophet?</div>
+      <ul class="clues-list">${cluesHtml}</ul>
+      <div class="prog-track"><div class="prog-fill" style="width:${prog}%"></div></div>
+    </div>
+    <button class="hint-btn" onclick="revealClue()" ${canReveal?'':'disabled'}>
+      ${clueIdx<p.clues.length-1?'💡 Reveal next clue (fewer points)':'All clues revealed'}
+    </button>
+    <div class="opts-grid">${optsHtml}</div>
+  `;
+}
+
+function revealClue(){
+  if(clueIdx<PROPHETS[0].clues.length-1&&!answered){clueIdx++;render();}
+}
+
+function checkAnswer(val,btn){
+  if(answered)return;
+  answered=true;
+  const {p}=qs[cur];
+  const ok=val===p.en;
+  const pts=ok?(MAX_CLUE_PTS[clueIdx]||5):0;
+  score+=pts;
+  history.push({p,ok,pts,chose:val});
+
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.style.pointerEvents='none';
+    const m=b.getAttribute('onclick').match(/'([^']+)'/);
+    if(m){
+      if(m[1]===p.en)b.classList.add('opt-correct');
+      else if(m[1]===val&&!ok)b.classList.add('opt-wrong');
+    }
+  });
+  document.querySelector('.hint-btn').disabled=true;
+
+  const nextLabel=cur+1>=qs.length?'See results →':'Next Prophet →';
+  const fbHtml=`
+    <div class="fb-panel ${ok?'fb-ok':'fb-no'}" role="status" aria-live="polite">
+      <span class="fb-icon">${ok?'✅':'💡'}</span>
+      <div>
+        <div class="fb-title">${ok?'Correct! MashaAllah! +'+pts+' points':'Not quite!'}</div>
+        <div class="fb-text">${ok?p.fact:'It was '+p.name+'. '+p.fact}</div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="nextQ()">${nextLabel}</button>
+  `;
+  document.getElementById('ga').insertAdjacentHTML('beforeend',fbHtml);
+}
+
+function nextQ(){answered=false;clueIdx=0;cur++;render();}
+
+function renderResults(){
+  const maxPts=qs.length*MAX_CLUE_PTS[0];
+  const pct=Math.round((score/maxPts)*100);
+  const stars=pct>=80?3:pct>=50?2:1;
+  const trophy=pct>=80?'🏆':pct>=50?'⭐':'📚';
+  const msg=pct>=80?'MashaAllah! You know the Prophets very well!':pct>=50?'Good effort! Keep learning the Prophet stories!':'The stories of the Prophets are beautiful — keep reading!';
+  const starsHtml=Array.from({length:3},(_,i)=>i<stars?'⭐':'☆').join('');
+
+  const rev=history.map(h=>`
+    <div class="rev-item">
+      <span class="rev-dot ${h.ok?'dot-ok':'dot-no'}"></span>
+      <span class="rev-icon">📖</span>
+      <div class="rev-text">
+        <div class="rev-name">${h.p.name}</div>
+        <div class="rev-detail">${h.ok?'+'+h.pts+' points earned':'You chose: '+h.chose+' · 0 points'}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('ga').innerHTML=`
+    <div class="results">
+      <span class="res-big">${trophy}</span>
+      <div class="res-title">Quiz complete!</div>
+      <div class="stars" aria-label="${stars} out of 3 stars">${starsHtml}</div>
+      <div class="res-score">${score}<span style="font-size:18px;color:#6b7280;font-weight:400"> / ${maxPts} pts</span></div>
+      <div class="res-sub">${msg}</div>
+      <div class="divider"></div>
+      <div class="rev-list">${rev}</div>
+      <button class="again-btn" onclick="start()">Play again</button>
+      <button class="next-btn" onclick="start()">New round →</button>
+    </div>
+  `;
+}
+
+start();
+</script>
+</body>
+</html>
